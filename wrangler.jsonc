@@ -1,13 +1,17 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "livemate-ai",
+  "name": "web-ai",
   "main": "worker/index.ts",
   "compatibility_date": "2026-09-06",
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application",
     "run_worker_first": [
-      "/api/*"
+      "/api/*",
+      "/terms",
+      "/terms/",
+      "/privacy",
+      "/privacy/"
     ]
   }
 }
