@@ -10,6 +10,12 @@ const TIKTOK_PRIVACY_SIGNATURE =
 const TIKTOK_PRIVACY_SIGNATURE_FILE =
   "tiktokwkiORgphi12wzi7GIohZmYXQJzVRq5B2.txt";
 
+const TIKTOK_WEB_SIGNATURE =
+  "tiktok-developers-site-verification=drc31PVRnOYk1cTQw3jJWMl5IbeT5ahv";
+
+const TIKTOK_WEB_SIGNATURE_FILE =
+  "tiktokdrc31PVRnOYk1cTQw3jJWMl5IbeT5ahv.txt";
+
 const FALLBACKS: Record<string, string[]> = {
   ramah: [
     "Wah, makasih sudah mampir! 😊",
@@ -253,12 +259,15 @@ async function handleChatRespond(
   }
 
   const hostName = cleanText(body?.hostName, 100);
-  const coHostName = cleanText(body?.coHostName, 100);
+
+  const coHostName =
+    cleanText(body?.coHostName, 100);
 
   const persona =
     cleanText(body?.persona, 50) || "ramah";
 
-  const topic = cleanText(body?.topic, 500);
+  const topic =
+    cleanText(body?.topic, 500);
 
   const currentComment =
     cleanText(body?.currentComment, 1000);
@@ -315,8 +324,11 @@ Gaya bicara:
 
   const historyText = history
     .map((item: any) => {
-      const role = cleanText(item?.role, 30);
-      const content = cleanText(item?.content, 500);
+      const role =
+        cleanText(item?.role, 30);
+
+      const content =
+        cleanText(item?.content, 500);
 
       if (!content) {
         return "";
@@ -328,7 +340,8 @@ Gaya bicara:
     .join("\n");
 
   const promptText = `
-Nama host: ${hostName || "Host"}
+Nama host:
+${hostName || "Host"}
 
 Nama co-host:
 ${coHostName || "LiveMate"}
@@ -550,9 +563,23 @@ export default {
     const url = new URL(request.url);
 
     /*
-     * =========================================================
+     * ========================================================
+     * TIKTOK WEB/DESKTOP SIGNATURE
+     * ========================================================
+     */
+
+    if (
+      request.method === "GET" &&
+      url.pathname ===
+        `/${TIKTOK_WEB_SIGNATURE_FILE}`
+    ) {
+      return text(TIKTOK_WEB_SIGNATURE);
+    }
+
+    /*
+     * ========================================================
      * TIKTOK TERMS SIGNATURE
-     * =========================================================
+     * ========================================================
      */
 
     if (
@@ -564,9 +591,9 @@ export default {
     }
 
     /*
-     * =========================================================
+     * ========================================================
      * TIKTOK PRIVACY SIGNATURE
-     * =========================================================
+     * ========================================================
      */
 
     if (
@@ -578,9 +605,9 @@ export default {
     }
 
     /*
-     * =========================================================
-     * TERMS
-     * =========================================================
+     * ========================================================
+     * TERMS OF SERVICE
+     * ========================================================
      */
 
     if (
@@ -594,9 +621,9 @@ export default {
     }
 
     /*
-     * =========================================================
-     * PRIVACY
-     * =========================================================
+     * ========================================================
+     * PRIVACY POLICY
+     * ========================================================
      */
 
     if (
@@ -610,9 +637,9 @@ export default {
     }
 
     /*
-     * =========================================================
+     * ========================================================
      * HEALTH CHECK
-     * =========================================================
+     * ========================================================
      */
 
     if (
@@ -631,9 +658,9 @@ export default {
     }
 
     /*
-     * =========================================================
+     * ========================================================
      * API TEST
-     * =========================================================
+     * ========================================================
      */
 
     if (
@@ -648,9 +675,9 @@ export default {
     }
 
     /*
-     * =========================================================
+     * ========================================================
      * AI CHAT
-     * =========================================================
+     * ========================================================
      */
 
     if (
@@ -664,9 +691,9 @@ export default {
     }
 
     /*
-     * =========================================================
+     * ========================================================
      * FRONTEND
-     * =========================================================
+     * ========================================================
      */
 
     if (env.ASSETS) {
