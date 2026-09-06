@@ -43,6 +43,19 @@ function cleanAnswer(text: string) {
     .trim();
 }
 
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
+    }
+  });
+}
+
 function htmlPage(title: string, body: string) {
   return new Response(
     `<!DOCTYPE html>
@@ -86,6 +99,48 @@ ${body}
       }
     }
   );
+}
+
+function personaDescription(persona: string) {
+  const descriptions: Record<string, string> = {
+    ramah:
+      "ramah, hangat, perhatian, dan terasa dekat dengan penonton",
+    lucu:
+      "lucu, spontan, ringan, dan sesekali menggunakan humor",
+    santai:
+      "santai, natural, seperti ngobrol dengan teman",
+    profesional:
+      "profesional tetapi tetap hangat dan tidak kaku",
+    energik:
+      "ceria, bersemangat, aktif mengajak penonton berinteraksi"
+  };
+
+  return descriptions[persona] || descriptions.ramah;
+}
+
+function variationInstruction(variation: string) {
+  const variations: Record<string, string> = {
+    regenerate:
+      "Buat jawaban alternatif yang berbeda dari jawaban sebelumnya.",
+    shorter:
+      "Buat jawaban sangat singkat dan langsung.",
+    funny:
+      "Tambahkan humor ringan jika cocok dengan konteks.",
+    friendly:
+      "Buat jawaban lebih hangat dan dekat dengan penonton.",
+    hype:
+      "Buat suasana lebih semangat dan menarik.",
+    continue:
+      "Lanjutkan percakapan secara natural berdasarkan konteks sebelumnya.",
+    invite:
+      "Ajak penonton lain ikut memberikan pendapat atau komentar.",
+    pantun:
+      "Jika cocok, jawab dengan pantun pendek yang natural.",
+    riddle:
+      "Jika cocok, gunakan teka-teki ringan."
+  };
+
+  return variations[variation] || "";
 }
 
 async function generateGemini(
@@ -136,6 +191,7 @@ async function generateGemini(
       if (!response.ok) {
         lastError =
           `Model ${model}: HTTP ${response.status} - ${responseText}`;
+
         console.error(lastError);
         continue;
       }
@@ -147,6 +203,7 @@ async function generateGemini(
       } catch {
         lastError =
           `Model ${model}: respons bukan JSON yang valid.`;
+
         continue;
       }
 
@@ -177,61 +234,6 @@ async function generateGemini(
     answer: null,
     error: lastError || "Gemini gagal memberikan respons."
   };
-}
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-    }
-  });
-}
-
-function personaDescription(persona: string) {
-  const descriptions: Record<string, string> = {
-    ramah:
-      "ramah, hangat, perhatian, dan terasa dekat dengan penonton",
-    lucu:
-      "lucu, spontan, ringan, dan sesekali menggunakan humor",
-    santai:
-      "santai, natural, seperti ngobrol dengan teman",
-    profesional:
-      "profesional tetapi tetap hangat dan tidak kaku",
-    energik:
-      "ceria, bersemangat, aktif mengajak penonton berinteraksi"
-  };
-
-  return descriptions[persona] || descriptions.ramah;
-}
-
-function variationInstruction(variation: string) {
-  const variations: Record<string, string> = {
-    regenerate:
-      "Buat jawaban alternatif yang berbeda dari jawaban sebelumnya.",
-    shorter:
-      "Buat jawaban sangat singkat dan langsung.",
-    funny:
-      "Tambahkan humor ringan jika cocok dengan konteks.",
-    friendly:
-      "Buat jawaban lebih hangat dan dekat dengan penonton.",
-    hype:
-      "Buat suasana lebih semangat dan menarik.",
-    continue:
-      "Lanjutkan percakapan secara natural berdasarkan konteks sebelumnya.",
-    invite:
-      "Ajak penonton lain ikut memberikan pendapat atau komentar.",
-    pantun:
-      "Jika cocok, jawab dengan pantun pendek yang natural.",
-    riddle:
-      "Jika cocok, gunakan teka-teki ringan."
-  };
-
-  return variations[variation] || "";
 }
 
 const termsHtml = `
@@ -398,10 +400,10 @@ export default {
       return json({ success: true });
     }
 
-    // TERMS OF SERVICE
     if (
       request.method === "GET" &&
-      (url.pathname === "/terms" || url.pathname === "/terms/")
+      (url.pathname === "/terms" ||
+       url.pathname === "/terms/")
     ) {
       return htmlPage(
         "LiveMate AI - Terms of Service",
@@ -409,10 +411,10 @@ export default {
       );
     }
 
-    // PRIVACY POLICY
     if (
       request.method === "GET" &&
-      (url.pathname === "/privacy" || url.pathname === "/privacy/")
+      (url.pathname === "/privacy" ||
+       url.pathname === "/privacy/")
     ) {
       return htmlPage(
         "LiveMate AI - Privacy Policy",
@@ -420,7 +422,6 @@ export default {
       );
     }
 
-    // HEALTH CHECK
     if (
       url.pathname === "/api/health" &&
       request.method === "GET"
@@ -433,7 +434,6 @@ export default {
       });
     }
 
-    // TEST
     if (
       url.pathname === "/api/test" &&
       request.method === "GET"
@@ -445,7 +445,6 @@ export default {
       });
     }
 
-    // GEMINI CHAT
     if (
       url.pathname === "/api/chat/respond" &&
       request.method === "POST"
@@ -460,12 +459,14 @@ export default {
         const currentComment = String(body.currentComment || "");
         const viewerName = String(body.viewerName || "Viewer");
         const variation = String(body.variation || "");
+
         const history =
           Array.isArray(body.history)
             ? body.history.slice(-8)
             : [];
 
-        const forceFallback = Boolean(body.useFallback);
+        const forceFallback =
+          Boolean(body.useFallback);
 
         const historyText = history
           .map((item: any) => {
@@ -488,8 +489,11 @@ export default {
           .filter(Boolean)
           .join("\n");
 
-        const personaText = personaDescription(persona);
-        const variationText = variationInstruction(variation);
+        const personaText =
+          personaDescription(persona);
+
+        const variationText =
+          variationInstruction(variation);
 
         const systemInstruction = `
 Kamu adalah AI co-host untuk TikTok Live.
@@ -563,6 +567,7 @@ Hanya berikan jawaban yang akan diucapkan.
         `.trim();
 
         if (!env.GEMINI_API_KEY) {
+
           if (forceFallback) {
             return json({
               success: true,
@@ -584,6 +589,7 @@ Hanya berikan jawaban yang akan diucapkan.
         }
 
         if (!forceFallback) {
+
           const result =
             await generateGemini(
               env.GEMINI_API_KEY,
@@ -619,6 +625,7 @@ Hanya berikan jawaban yang akan diucapkan.
         });
 
       } catch (error: any) {
+
         return json(
           {
             success: false,
@@ -632,7 +639,6 @@ Hanya berikan jawaban yang akan diucapkan.
       }
     }
 
-    // FRONTEND
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
