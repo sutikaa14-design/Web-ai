@@ -1,10 +1,8 @@
 name: Extract LiveMate AI
 
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - "*.zip"
+  workflow_dispatch:
 
 jobs:
   extract:
@@ -14,41 +12,34 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Find ZIP
-        id: zip
         run: |
           ZIP=$(find . -maxdepth 1 -type f -iname "*.zip" | head -n 1)
-
           if [ -z "$ZIP" ]; then
-            echo "ZIP tidak ditemukan"
+            echo "ZIP LiveMate tidak ditemukan"
             exit 1
           fi
-
-          echo "ZIP ditemukan: $ZIP"
-          echo "file=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "ZIP: $ZIP"
 
       - name: Extract ZIP
         run: |
-          ZIP="${{ steps.zip.outputs.file }}"
-
-          mkdir -p extracted
-          unzip -o "$ZIP" -d extracted
-
-          cp -R extracted/. .
-          rm -rf extracted
+          ZIP=$(find . -maxdepth 1 -type f -iname "*.zip" | head -n 1)
+          mkdir -p temp_extract
+          unzip -o "$ZIP" -d temp_extract
+          cp -R temp_extract/. .
+          rm -rf temp_extract
 
       - name: Remove ZIP
         run: |
-          rm -f "${{ steps.zip.outputs.file }}"
+          rm -f ./*.zip
 
-      - name: Commit extracted code
+      - name: Save changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add -A
-          git diff --cached --quiet || git commit -m "Extract LiveMate AI source code"
+          git diff --cached --quiet || git commit -m "Extract LiveMate AI"
           git push
