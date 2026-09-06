@@ -43,6 +43,51 @@ function cleanAnswer(text: string) {
     .trim();
 }
 
+function htmlPage(title: string, body: string) {
+  return new Response(
+    `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${title}</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  line-height: 1.7;
+  color: #222;
+}
+h1 {
+  margin-bottom: 8px;
+}
+h2 {
+  margin-top: 30px;
+}
+a {
+  color: #2563eb;
+}
+small {
+  color: #666;
+}
+</style>
+</head>
+<body>
+${body}
+</body>
+</html>`,
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store"
+      }
+    }
+  );
+}
+
 async function generateGemini(
   apiKey: string,
   prompt: string
@@ -50,7 +95,6 @@ async function generateGemini(
   answer: string | null;
   error?: string;
 }> {
-
   const models = [
     "gemini-3.8-flash",
     "gemini-3.1-flash-lite"
@@ -92,9 +136,7 @@ async function generateGemini(
       if (!response.ok) {
         lastError =
           `Model ${model}: HTTP ${response.status} - ${responseText}`;
-
         console.error(lastError);
-
         continue;
       }
 
@@ -105,7 +147,6 @@ async function generateGemini(
       } catch {
         lastError =
           `Model ${model}: respons bukan JSON yang valid.`;
-
         continue;
       }
 
@@ -155,16 +196,12 @@ function personaDescription(persona: string) {
   const descriptions: Record<string, string> = {
     ramah:
       "ramah, hangat, perhatian, dan terasa dekat dengan penonton",
-
     lucu:
       "lucu, spontan, ringan, dan sesekali menggunakan humor",
-
     santai:
       "santai, natural, seperti ngobrol dengan teman",
-
     profesional:
       "profesional tetapi tetap hangat dan tidak kaku",
-
     energik:
       "ceria, bersemangat, aktif mengajak penonton berinteraksi"
   };
@@ -176,34 +213,178 @@ function variationInstruction(variation: string) {
   const variations: Record<string, string> = {
     regenerate:
       "Buat jawaban alternatif yang berbeda dari jawaban sebelumnya.",
-
     shorter:
       "Buat jawaban sangat singkat dan langsung.",
-
     funny:
       "Tambahkan humor ringan jika cocok dengan konteks.",
-
     friendly:
       "Buat jawaban lebih hangat dan dekat dengan penonton.",
-
     hype:
       "Buat suasana lebih semangat dan menarik.",
-
     continue:
       "Lanjutkan percakapan secara natural berdasarkan konteks sebelumnya.",
-
     invite:
       "Ajak penonton lain ikut memberikan pendapat atau komentar.",
-
     pantun:
       "Jika cocok, jawab dengan pantun pendek yang natural.",
-
     riddle:
       "Jika cocok, gunakan teka-teki ringan."
   };
 
   return variations[variation] || "";
 }
+
+const termsHtml = `
+<h1>LiveMate AI – Terms of Service</h1>
+<small>Effective date: September 7, 2026</small>
+
+<p>
+Selamat datang di LiveMate AI. Dengan menggunakan layanan ini,
+Anda menyetujui ketentuan berikut.
+</p>
+
+<h2>1. Tentang LiveMate AI</h2>
+<p>
+LiveMate AI adalah alat bantu AI yang dirancang untuk membantu
+creator membuat respons terhadap komentar dan percakapan selama
+siaran langsung secara lebih cepat dan natural.
+</p>
+
+<h2>2. Penggunaan Layanan</h2>
+<p>
+Anda bertanggung jawab atas penggunaan LiveMate AI dan seluruh
+konten yang Anda kirim atau hasilkan melalui layanan.
+</p>
+
+<p>
+Anda tidak boleh menggunakan layanan untuk aktivitas ilegal,
+penipuan, pelecehan, penyalahgunaan, atau aktivitas yang melanggar
+ketentuan platform pihak ketiga.
+</p>
+
+<h2>3. Respons AI</h2>
+<p>
+Respons yang dihasilkan AI dapat mengandung kesalahan. Anda tetap
+bertanggung jawab untuk memeriksa dan menentukan apakah suatu
+respons layak digunakan dalam siaran Anda.
+</p>
+
+<h2>4. TikTok</h2>
+<p>
+Jika integrasi TikTok digunakan, penggunaan fitur TikTok tetap
+tunduk pada ketentuan dan kebijakan TikTok yang berlaku.
+LiveMate AI tidak mengubah atau menggantikan ketentuan TikTok.
+</p>
+
+<h2>5. Data Sensitif</h2>
+<p>
+Jangan mengirim password, kode OTP, nomor kartu pembayaran,
+atau informasi sensitif lainnya melalui LiveMate AI.
+</p>
+
+<h2>6. Ketersediaan</h2>
+<p>
+Kami berusaha menjaga layanan tetap tersedia, tetapi tidak
+menjamin layanan selalu bebas gangguan atau selalu tersedia.
+</p>
+
+<h2>7. Perubahan Layanan</h2>
+<p>
+Fitur dan layanan dapat diperbarui, diperbaiki, atau diubah
+sewaktu-waktu untuk meningkatkan keamanan dan kualitas layanan.
+</p>
+
+<h2>8. Hubungi Pengelola</h2>
+<p>
+Untuk pertanyaan mengenai layanan atau ketentuan ini, gunakan
+kanal kontak yang tersedia pada aplikasi LiveMate AI.
+</p>
+
+<p>
+<a href="/privacy">Lihat Privacy Policy</a>
+</p>
+`;
+
+const privacyHtml = `
+<h1>LiveMate AI – Privacy Policy</h1>
+<small>Effective date: September 7, 2026</small>
+
+<p>
+Privacy Policy ini menjelaskan bagaimana LiveMate AI menangani
+informasi yang digunakan untuk menjalankan layanan.
+</p>
+
+<h2>1. Informasi yang Diproses</h2>
+<p>
+Untuk menghasilkan respons AI, layanan dapat memproses informasi
+yang dikirim oleh pengguna, seperti nama host, nama co-host,
+nama viewer, komentar, topik live, dan konteks percakapan.
+</p>
+
+<h2>2. Penggunaan Informasi</h2>
+<p>
+Informasi tersebut digunakan untuk menjalankan fitur LiveMate AI,
+termasuk menghasilkan respons yang relevan terhadap percakapan.
+</p>
+
+<h2>3. Pemrosesan AI</h2>
+<p>
+Konten yang diperlukan untuk menghasilkan respons dapat dikirim
+ke layanan AI yang digunakan oleh LiveMate AI, termasuk Google
+Gemini API. Pemrosesan tersebut digunakan untuk menghasilkan
+respons berdasarkan permintaan pengguna.
+</p>
+
+<h2>4. TikTok</h2>
+<p>
+Apabila integrasi resmi TikTok digunakan, data TikTok hanya akan
+diproses sesuai izin dan cakupan akses yang diberikan pengguna
+serta kebijakan TikTok yang berlaku.
+</p>
+
+<h2>5. Keamanan</h2>
+<p>
+Kami berusaha menggunakan langkah teknis yang wajar untuk
+melindungi informasi yang diproses oleh layanan. Namun tidak ada
+sistem internet yang dapat dijamin 100% aman.
+</p>
+
+<h2>6. Penyimpanan dan Log</h2>
+<p>
+Informasi dapat diproses sementara untuk menjalankan layanan dan
+informasi teknis tertentu dapat muncul dalam log sistem apabila
+diperlukan untuk keamanan, pemecahan masalah, dan operasional.
+</p>
+
+<h2>7. Informasi Sensitif</h2>
+<p>
+Pengguna tidak boleh memasukkan password, OTP, nomor kartu,
+atau informasi sensitif lain yang tidak diperlukan ke dalam
+LiveMate AI.
+</p>
+
+<h2>8. Penjualan Data</h2>
+<p>
+LiveMate AI tidak menjual informasi pribadi pengguna kepada pihak
+lain untuk tujuan pemasaran.
+</p>
+
+<h2>9. Perubahan Privacy Policy</h2>
+<p>
+Privacy Policy ini dapat diperbarui apabila terdapat perubahan
+pada layanan, teknologi, atau kebutuhan operasional.
+</p>
+
+<h2>10. Kontak</h2>
+<p>
+Untuk pertanyaan mengenai privasi, gunakan kanal kontak yang
+tersedia pada aplikasi LiveMate AI.
+</p>
+
+<p>
+<a href="/terms">Lihat Terms of Service</a>
+</p>
+`;
 
 export default {
   async fetch(
@@ -213,18 +394,33 @@ export default {
 
     const url = new URL(request.url);
 
-    // --------------------------------------------------
-    // CORS PREFLIGHT
-    // --------------------------------------------------
-
     if (request.method === "OPTIONS") {
       return json({ success: true });
     }
 
-    // --------------------------------------------------
-    // HEALTH CHECK
-    // --------------------------------------------------
+    // TERMS OF SERVICE
+    if (
+      request.method === "GET" &&
+      (url.pathname === "/terms" || url.pathname === "/terms/")
+    ) {
+      return htmlPage(
+        "LiveMate AI - Terms of Service",
+        termsHtml
+      );
+    }
 
+    // PRIVACY POLICY
+    if (
+      request.method === "GET" &&
+      (url.pathname === "/privacy" || url.pathname === "/privacy/")
+    ) {
+      return htmlPage(
+        "LiveMate AI - Privacy Policy",
+        privacyHtml
+      );
+    }
+
+    // HEALTH CHECK
     if (
       url.pathname === "/api/health" &&
       request.method === "GET"
@@ -237,10 +433,7 @@ export default {
       });
     }
 
-    // --------------------------------------------------
     // TEST
-    // --------------------------------------------------
-
     if (
       url.pathname === "/api/test" &&
       request.method === "GET"
@@ -252,59 +445,30 @@ export default {
       });
     }
 
-    // --------------------------------------------------
-    // AI CHAT
-    // --------------------------------------------------
-
+    // GEMINI CHAT
     if (
       url.pathname === "/api/chat/respond" &&
       request.method === "POST"
     ) {
-
       try {
-
         const body: any = await request.json();
 
-        const hostName =
-          String(body.hostName || "Host");
-
-        const coHostName =
-          String(body.coHostName || "AI");
-
-        const persona =
-          String(body.persona || "ramah");
-
-        const topic =
-          String(body.topic || "");
-
-        const currentComment =
-          String(body.currentComment || "");
-
-        const viewerName =
-          String(body.viewerName || "Viewer");
-
-        const variation =
-          String(body.variation || "");
-
+        const hostName = String(body.hostName || "Host");
+        const coHostName = String(body.coHostName || "AI");
+        const persona = String(body.persona || "ramah");
+        const topic = String(body.topic || "");
+        const currentComment = String(body.currentComment || "");
+        const viewerName = String(body.viewerName || "Viewer");
+        const variation = String(body.variation || "");
         const history =
           Array.isArray(body.history)
             ? body.history.slice(-8)
             : [];
 
-        /*
-         * Jangan menggunakan fallback secara diam-diam
-         * ketika Gemini tersedia.
-         */
-        const forceFallback =
-          Boolean(body.useFallback);
-
-        // ------------------------------------------------
-        // HISTORY
-        // ------------------------------------------------
+        const forceFallback = Boolean(body.useFallback);
 
         const historyText = history
           .map((item: any) => {
-
             const role =
               item?.role === "assistant"
                 ? coHostName
@@ -317,32 +481,15 @@ export default {
                 ""
               );
 
-            if (!text) {
-              return "";
-            }
+            if (!text) return "";
 
             return `${role}: ${text}`;
           })
           .filter(Boolean)
           .join("\n");
 
-        // ------------------------------------------------
-        // PERSONA
-        // ------------------------------------------------
-
-        const personaText =
-          personaDescription(persona);
-
-        // ------------------------------------------------
-        // VARIATION
-        // ------------------------------------------------
-
-        const variationText =
-          variationInstruction(variation);
-
-        // ------------------------------------------------
-        // SYSTEM PROMPT
-        // ------------------------------------------------
+        const personaText = personaDescription(persona);
+        const variationText = variationInstruction(variation);
 
         const systemInstruction = `
 Kamu adalah AI co-host untuk TikTok Live.
@@ -390,10 +537,6 @@ Gaya tambahan:
 ${variationText || "Tidak ada gaya tambahan khusus."}
         `.trim();
 
-        // ------------------------------------------------
-        // PROMPT
-        // ------------------------------------------------
-
         const prompt = `
 ${systemInstruction}
 
@@ -419,12 +562,7 @@ Jawaban harus:
 Hanya berikan jawaban yang akan diucapkan.
         `.trim();
 
-        // ------------------------------------------------
-        // GEMINI CHECK
-        // ------------------------------------------------
-
         if (!env.GEMINI_API_KEY) {
-
           if (forceFallback) {
             return json({
               success: true,
@@ -445,12 +583,7 @@ Hanya berikan jawaban yang akan diucapkan.
           );
         }
 
-        // ------------------------------------------------
-        // GEMINI REQUEST
-        // ------------------------------------------------
-
         if (!forceFallback) {
-
           const result =
             await generateGemini(
               env.GEMINI_API_KEY,
@@ -458,7 +591,6 @@ Hanya berikan jawaban yang akan diucapkan.
             );
 
           if (result.answer) {
-
             return json({
               success: true,
               answer: result.answer,
@@ -467,7 +599,6 @@ Hanya berikan jawaban yang akan diucapkan.
             });
           }
 
-          // Jangan sembunyikan error Gemini.
           return json(
             {
               success: false,
@@ -480,10 +611,6 @@ Hanya berikan jawaban yang akan diucapkan.
           );
         }
 
-        // ------------------------------------------------
-        // MANUAL FALLBACK
-        // ------------------------------------------------
-
         return json({
           success: true,
           answer: fallbackAnswer(persona),
@@ -492,7 +619,6 @@ Hanya berikan jawaban yang akan diucapkan.
         });
 
       } catch (error: any) {
-
         return json(
           {
             success: false,
@@ -506,10 +632,7 @@ Hanya berikan jawaban yang akan diucapkan.
       }
     }
 
-    // --------------------------------------------------
-    // FRONTEND ASSETS
-    // --------------------------------------------------
-
+    // FRONTEND
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
