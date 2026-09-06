@@ -1,0 +1,80 @@
+import { PersonaDetails, PersonaType } from '../types';
+
+export const PERSONAS: Record<PersonaType, PersonaDetails> = {
+  ramah: {
+    id: 'ramah',
+    label: 'Ramah',
+    emoji: '😊',
+    tagline: 'Hangat & Akrab',
+    description: 'Menjawab dengan manis, sopan, bersahabat, dan selalu membuat penonton merasa dihargai.',
+    color: 'text-emerald-400',
+    bgLight: 'bg-emerald-500/10',
+    borderActive: 'border-emerald-500 ring-emerald-500/30',
+  },
+  lucu: {
+    id: 'lucu',
+    label: 'Lucu',
+    emoji: '😂',
+    tagline: 'Humoris & Nyeletuk',
+    description: 'Suka bercanda renyah, nyeletuk lucu, siap bikin pantun, dan menjaga suasana LIVE tetap ramai tertawa.',
+    color: 'text-amber-400',
+    bgLight: 'bg-amber-500/10',
+    borderActive: 'border-amber-500 ring-amber-500/30',
+  },
+  santai: {
+    id: 'santai',
+    label: 'Santai',
+    emoji: '😎',
+    tagline: 'Chill & Asik',
+    description: 'Gaya ngobrol tongkrongan yang rileks, akrab tanpa basa-basi, menggunakan bahasa gaul yang pas.',
+    color: 'text-cyan-400',
+    bgLight: 'bg-cyan-500/10',
+    borderActive: 'border-cyan-500 ring-cyan-500/30',
+  },
+  profesional: {
+    id: 'profesional',
+    label: 'Profesional',
+    emoji: '💼',
+    tagline: 'Lugas & Terpercaya',
+    description: 'Jawaban berbobot, terstruktur, percaya diri, namun tetap luwes dan tidak terdengar seperti robot korporat.',
+    color: 'text-indigo-400',
+    bgLight: 'bg-indigo-500/10',
+    borderActive: 'border-indigo-500 ring-indigo-500/30',
+  },
+  energik: {
+    id: 'energik',
+    label: 'Energik',
+    emoji: '🔥',
+    tagline: 'Hype & Bersemangat',
+    description: 'Penuh antusiasme, seru, memompa semangat penonton untuk ikut aktif komen dan tap-tap layar.',
+    color: 'text-rose-400',
+    bgLight: 'bg-rose-500/10',
+    borderActive: 'border-rose-500 ring-rose-500/30',
+  },
+};
+
+export const TOPIC_PRESETS = [
+  'Ngobrol Santai & Curhat Sore',
+  'Q&A Tanya Apa Saja Bebas',
+  'Review & Rekomendasi Produk',
+  'Kulineran & Mukbang Makanan',
+  'Mabar Game & Seru-seruan',
+  'Sharing Tips & Belajar Bareng',
+];
+
+export const SAMPLE_COMMENTS = [
+  'Kamu siapa?',
+  'Siapa kamu?',
+  'Apa yang bisa kamu lakukan?',
+  'Halo',
+  'Apa kabar?',
+  'Terima kasih',
+  'Lucu dong',
+  'Menurut kamu gimana?',
+  'Kamu suka makanan pedas nggak?',
+  'Kak live sampai jam berapa hari ini?',
+  'Salam dari Surabaya kak, rame terus!',
+  'Bikin pantun dong co-host!',
+  'Host sama co-host kompak banget haha',
+  'Lagi bahas apa nih baru join?',
+];

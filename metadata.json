@@ -1,0 +1,7 @@
+{
+  "name": "LiveMate AI",
+  "description": "Asisten AI co-host khusus tablet untuk live streaming, membantu menjawab komentar dan pertanyaan penonton secara natural dan interaktif.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
